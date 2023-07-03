@@ -6,12 +6,11 @@
 /*   By: wel-safa <wel-safa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/30 14:05:21 by wel-safa          #+#    #+#             */
-/*   Updated: 2023/07/03 17:09:15 by wel-safa         ###   ########.fr       */
+/*   Updated: 2023/07/03 17:55:21 by wel-safa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-//#include "ft_putnbr_base.c"
 
 int	ft_printstr(char *s)
 {
