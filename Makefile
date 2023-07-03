@@ -6,12 +6,12 @@
 #    By: wel-safa <wel-safa@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/10 10:42:56 by wel-safa          #+#    #+#              #
-#    Updated: 2023/06/30 18:23:18 by wel-safa         ###   ########.fr        #
+#    Updated: 2023/07/03 17:08:37 by wel-safa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME := libftprintf.a
-SRC	:= ft_printf.c ft_putnbr_base.c
+SRC	:= ft_printf.c ft_printf_base.c ft_printf_putnbr.c
 OBJS := ${SRC:.c=.o}
 
 CFLAGS := -Wall -Werror -Wextra -g

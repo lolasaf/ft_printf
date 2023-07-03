@@ -6,25 +6,12 @@
 /*   By: wel-safa <wel-safa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/30 14:05:21 by wel-safa          #+#    #+#             */
-/*   Updated: 2023/07/03 16:01:06 by wel-safa         ###   ########.fr       */
+/*   Updated: 2023/07/03 17:09:15 by wel-safa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 //#include "ft_putnbr_base.c"
-
-int	ft_strlen(const char *s)
-{
-	int	n;
-
-	n = 0;
-	while (*s)
-	{
-		n++;
-		s++;
-	}
-	return (n);
-}
 
 int	ft_printstr(char *s)
 {
@@ -54,106 +41,85 @@ int	ft_putptr(void *ptr)
 	return (ft_putnbr_base(address, "0123456789abcdef", 2));
 }
 
-int	ft_putnbr_fd(int n, int fd, int count)
+int	ft_process_string(const char *str, va_list args, size_t i, int count)
 {
-	long int	ln;
-	char		c;
-
-	ln = n;
-	if (fd < 0)
-		return (0);
-	if (ln < 0)
+	while (++i < ft_strlen(str))
 	{
-		ln *= -1;
-		write(fd, "-", 1);
-		count++;
-	}
-	if (ln / 10 > 0)
-	{
-		count = ft_putnbr_fd(ln / 10, fd, count);
-		count = ft_putnbr_fd(ln % 10, fd, count);
-	}
-	if (ln / 10 == 0)
-	{
-		c = ln + '0';
-		write(fd, &c, 1);
-		count++;
-	}
-	return (count);
-}
-
-int	ft_putunsignednbr_fd(unsigned int n, int fd, int count)
-{
-	long unsigned int	ln;
-	char				c;
-
-	ln = n;
-	if (fd < 0)
-		return (0);
-	if (ln < 0)
-	{
-		ln *= -1;
-		write(fd, "-", 1);
-		count++;
-	}
-	if (ln / 10 > 0)
-	{
-		count = ft_putunsignednbr_fd(ln / 10, fd, count);
-		count = ft_putunsignednbr_fd(ln % 10, fd, count);
-	}
-	if (ln / 10 == 0)
-	{
-		c = ln + '0';
-		write(fd, &c, 1);
-		count++;
+		if (str[i] == '%' && str[++i])
+		{
+			if (str[i] == '%')
+				count += ft_putchar('%');
+			else if (str[i] == 'c')
+				count += ft_putchar(va_arg(args, int));
+			else if (str[i] == 's')
+				count += ft_printstr(va_arg(args, char *));
+			else if (str[i] == 'p')
+				count += ft_putptr(va_arg(args, void *));
+			else if (str[i] == 'd' || str[i] == 'i')
+				count += ft_putnbr_fd(va_arg(args, int), 1, 0);
+			else if (str[i] == 'u')
+				count += ft_putunsignednbr_fd(va_arg(args, unsigned int), 1, 0);
+			else if (str[i] == 'x' || str[i] == 'X')
+				count += ft_putnbr_case(str[i], va_arg(args, unsigned int));
+		}
+		else
+			count += ft_putchar(str[i]);
 	}
 	return (count);
 }
 
 int	ft_printf(const char *str, ...)
 {
-	size_t	strl;
+	int		count;
+	va_list	args;
+
+	if (str == 0)
+		return (-1);
+	va_start(args, str);
+	count = ft_process_string(str, args, -1, 0);
+	va_end(args);
+	return (count);
+}
+/*
+int	ft_printf(const char *str, ...)
+{
 	size_t	i;
 	int		count;
 	va_list	args;
 
-	i = 0;
+	i = -1;
 	count = 0;
 	if (str == 0)
 		return (-1);
-	strl = ft_strlen(str);
 	va_start(args, str);
-	while (i < strl)
+	while (++i < ft_strlen(str))
 	{
-		if (str[i] == '%')
+		if (str[i] == '%' && str[++i])
 		{
-			if (str[i + 1] == '%')
+			if (str[i] == '%')
 				count += ft_putchar('%');
-			else if (str[i + 1] == 'c')
+			else if (str[i] == 'c')
 				count += ft_putchar(va_arg(args, int));
-			else if (str[i + 1] == 's')
+			else if (str[i] == 's')
 				count += ft_printstr(va_arg(args, char *));
-			else if (str[i + 1] == 'p')
+			else if (str[i] == 'p')
 				count += ft_putptr(va_arg(args, void *));
-			else if (str[i + 1] == 'd' || str[i + 1] == 'i')
+			else if (str[i] == 'd' || str[i] == 'i')
 				count += ft_putnbr_fd(va_arg(args, int), 1, 0);
-			else if (str[i + 1] == 'u')
+			else if (str[i] == 'u')
 				count += ft_putunsignednbr_fd(va_arg(args, unsigned int), 1, 0);
-			else if (str[i + 1] == 'x')
+			else if (str[i] == 'x')
 				count += ft_putnbr_base(va_arg(args, unsigned int), "0123456789abcdef", 0);
-			else if (str[i + 1] == 'X')
+			else if (str[i] == 'X')
 				count += ft_putnbr_base(va_arg(args, unsigned int), "0123456789ABCDEF", 0);
-			if (str[i + 1] != '\0')
-				i++;
 		}
 		else
 			count += ft_putchar(str[i]);
-		i++;
 	}
 	return (count);
 }
-/*
-int	main(void)
+*/
+/*int	main(void)
 {
 	char c = 'Z';
 	char *p = &c;
