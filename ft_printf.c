@@ -6,12 +6,12 @@
 /*   By: wel-safa <wel-safa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/30 14:05:21 by wel-safa          #+#    #+#             */
-/*   Updated: 2023/06/30 19:36:35 by wel-safa         ###   ########.fr       */
+/*   Updated: 2023/07/03 16:01:06 by wel-safa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-//include "ft_putnbr_base.c"
+//#include "ft_putnbr_base.c"
 
 int	ft_strlen(const char *s)
 {
@@ -39,64 +39,75 @@ int	ft_printstr(char *s)
 	return (ft_strlen(s));
 }
 
-void	ft_putptr(void *ptr)
+int	ft_putptr(void *ptr)
 {
 	unsigned long long	address;
 
 	address = (unsigned long long)ptr;
+	if (address == 0)
+	{
+		write(1, "(nil)", 5);
+		return (5);
+	}
 	ft_putchar('0');
 	ft_putchar('x');
-	ft_putnbr_base(address, "0123456789abcdef");
+	return (ft_putnbr_base(address, "0123456789abcdef", 2));
 }
 
-void	ft_putnbr_fd(int n, int fd)
+int	ft_putnbr_fd(int n, int fd, int count)
 {
 	long int	ln;
 	char		c;
 
 	ln = n;
 	if (fd < 0)
-		return ;
+		return (0);
 	if (ln < 0)
 	{
 		ln *= -1;
 		write(fd, "-", 1);
+		count++;
 	}
 	if (ln / 10 > 0)
 	{
-		ft_putnbr_fd(ln / 10, fd);
-		ft_putnbr_fd(ln % 10, fd);
+		count = ft_putnbr_fd(ln / 10, fd, count);
+		count = ft_putnbr_fd(ln % 10, fd, count);
 	}
 	if (ln / 10 == 0)
 	{
 		c = ln + '0';
 		write(fd, &c, 1);
+		count++;
 	}
+	return (count);
 }
 
-void	ft_putunsignednbr_fd(unsigned int n, int fd)
+int	ft_putunsignednbr_fd(unsigned int n, int fd, int count)
 {
 	long unsigned int	ln;
 	char				c;
 
 	ln = n;
 	if (fd < 0)
-		return ;
+		return (0);
 	if (ln < 0)
 	{
 		ln *= -1;
 		write(fd, "-", 1);
+		count++;
 	}
 	if (ln / 10 > 0)
 	{
-		ft_putnbr_fd(ln / 10, fd);
-		ft_putnbr_fd(ln % 10, fd);
+		count = ft_putunsignednbr_fd(ln / 10, fd, count);
+		count = ft_putunsignednbr_fd(ln % 10, fd, count);
 	}
 	if (ln / 10 == 0)
 	{
 		c = ln + '0';
 		write(fd, &c, 1);
+		count++;
 	}
+	return (count);
 }
 
 int	ft_printf(const char *str, ...)
@@ -108,6 +119,8 @@ int	ft_printf(const char *str, ...)
 
 	i = 0;
 	count = 0;
+	if (str == 0)
+		return (-1);
 	strl = ft_strlen(str);
 	va_start(args, str);
 	while (i < strl)
@@ -121,15 +134,15 @@ int	ft_printf(const char *str, ...)
 			else if (str[i + 1] == 's')
 				count += ft_printstr(va_arg(args, char *));
 			else if (str[i + 1] == 'p')
-				ft_putptr(va_arg(args, void *));
+				count += ft_putptr(va_arg(args, void *));
 			else if (str[i + 1] == 'd' || str[i + 1] == 'i')
-				ft_putnbr_fd(va_arg(args, int), 1);
+				count += ft_putnbr_fd(va_arg(args, int), 1, 0);
 			else if (str[i + 1] == 'u')
-				ft_putunsignednbr_fd(va_arg(args, unsigned int), 1);
+				count += ft_putunsignednbr_fd(va_arg(args, unsigned int), 1, 0);
 			else if (str[i + 1] == 'x')
-				ft_putnbr_base(va_arg(args, unsigned int), "0123456789abcdef");
+				count += ft_putnbr_base(va_arg(args, unsigned int), "0123456789abcdef", 0);
 			else if (str[i + 1] == 'X')
-				ft_putnbr_base(va_arg(args, unsigned int), "0123456789ABCDEF");
+				count += ft_putnbr_base(va_arg(args, unsigned int), "0123456789ABCDEF", 0);
 			if (str[i + 1] != '\0')
 				i++;
 		}
@@ -168,5 +181,10 @@ int	main(void)
 	a = printf("printf= NULL %s NULL \n", (char *)NULL);
 	b = ft_printf("fprint= NULL %s NULL \n", NULL);
 	printf("%i %i \n", a, b);
-	return 0;
+
+	a = ft_printf(" %p %p ", 0, 0);
+	printf("%i\n", a);
+
+	printf("%i\n", printf(""));
+	printf("%i\n", ft_printf(""));
 }*/

@@ -6,7 +6,7 @@
 /*   By: wel-safa <wel-safa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/30 15:13:07 by wel-safa          #+#    #+#             */
-/*   Updated: 2023/06/30 19:32:03 by wel-safa         ###   ########.fr       */
+/*   Updated: 2023/07/03 13:57:33 by wel-safa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,20 +43,25 @@ int	ft_putchar(char c)
 	return (1);
 }
 
-void	ft_putnbr_base(unsigned long long nb, char *base)
+int	ft_putnbr_base(unsigned long long nb, char *base, int count)
 {
 	if (!(ft_strlen_valid(base) > 1))
-		return ;
+		return (0);
 	if (nb < 0)
 	{
 		ft_putchar('-');
+		count++;
 		nb *= -1;
 	}
 	if (nb / ft_strlen_valid(base) == 0)
+	{
 		ft_putchar(base[nb % ft_strlen_valid(base)]);
+		count++;
+	}
 	else
 	{
-		ft_putnbr_base(nb / ft_strlen_valid(base), base);
-		ft_putnbr_base(nb % ft_strlen_valid(base), base);
+		count = ft_putnbr_base(nb / ft_strlen_valid(base), base, count);
+		count = ft_putnbr_base(nb % ft_strlen_valid(base), base, count);
 	}
+	return (count);
 }
